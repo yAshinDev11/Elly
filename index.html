@@ -104,7 +104,7 @@
             cursor: pointer;
         }
 
-        /* Capa do Álbum Centralizada Importante */
+        /* Capa do Álbum Centralizada */
         .album-art-container {
             padding: 10px 24px;
             display: flex;
@@ -123,7 +123,6 @@
             object-fit: cover;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
             transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer;
         }
         
         .playing .album-art-large {
@@ -131,19 +130,7 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
 
-        /* Dica visual para carregar a música */
-        .upload-tip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-
-        /* Frase/Letra em Destaque provisório */
+        /* Frase/Letra em Destaque */
         .lyrics-highlight {
             padding: 20px 24px;
         }
@@ -206,7 +193,7 @@
             cursor: pointer;
         }
 
-        /* Linha do Tempo e Controles interativos */
+        /* Linha do Tempo e Controles */
         .controls-wrapper {
             padding: 0 24px;
         }
@@ -240,7 +227,7 @@
             font-weight: 500;
         }
 
-        /* Botões de Mídia Principais */
+        /* Botões de Mídia */
         .media-buttons {
             display: flex;
             justify-content: space-between;
@@ -262,6 +249,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
         }
 
         .media-buttons .play-pause-btn .material-icons-round {
@@ -272,7 +260,7 @@
         .play-pause-btn .icon-play { margin-left: 4px; }
         .play-pause-btn .icon-pause { display: none; }
 
-        /* Rodapé de Dispositivos Conectados */
+        /* Rodapé */
         .footer-device-row {
             display: flex;
             justify-content: space-between;
@@ -297,7 +285,7 @@
             color: #cccccc;
         }
 
-        /* CAIXA DE LETRA */
+        /* Letras */
         .lyrics-drawer-container {
             background-color: #4c1c0c; 
             border-radius: 20px;
@@ -323,12 +311,6 @@
             padding-top: 30px;
         }
 
-        .lyrics-drawer-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
         .lyrics-body-scroller {
             display: flex;
             flex-direction: column;
@@ -350,23 +332,20 @@
         .lyrics-drawer-container:not(.expanded) .lyric-line:nth-child(n+5) {
             display: none;
         }
-        
-        #file-input { display: none; }
     </style>
 </head>
 <body>
 
     <div class="background-blur-gradient"></div>
 
-    <input type="file" id="file-input" accept="audio/*">
-    <audio id="audio-track" preload="metadata"></audio>
+    <audio id="audio-track" src="musica.mp3" preload="metadata"></audio>
 
     <div class="player-main-card" id="card-wrapper">
         
         <div class="player-header">
             <span class="material-icons-round">expand_more</span>
             <div class="header-title-wrapper">
-                <div class="header-subtitle">Tocando da busca</div>
+                <div class="header-subtitle">Tocando do GitHub</div>
             </div>
             <span class="material-icons-round">more_vert</span>
         </div>
@@ -377,11 +356,10 @@
 
         <div class="album-art-container">
             <img class="album-art-large" id="album-art" src="https://i.postimg.cc/85bWv40s/mitski-cover.jpg" alt="Capa do Álbum">
-            <div class="upload-tip" id="upload-tip">Clica na capa para carregar o MP3</div>
         </div>
 
         <div class="lyrics-highlight">
-            <p class="lyrics-text" id="highlight-text">Toca na capa para começar</p>
+            <p class="lyrics-text" id="highlight-text">Moon, a hole of light</p>
         </div>
 
         <div class="video-toggle-btn">
@@ -423,7 +401,7 @@
         <div class="footer-device-row">
             <div class="device-connection">
                 <span class="material-icons-round">speaker_group</span>
-                Conexão Local GitHub
+                GitHub Pages Ativo
             </div>
             <div class="footer-right-actions">
                 <span class="material-icons-round">share</span>
@@ -452,9 +430,6 @@
 
     <script>
         const audio = document.getElementById('audio-track');
-        const fileInput = document.getElementById('file-input');
-        const albumArt = document.getElementById('album-art');
-        const uploadTip = document.getElementById('upload-tip');
         const playPauseBtn = document.getElementById('btn-play-pause');
         const playIcon = document.getElementById('play-icon');
         const pauseIcon = document.getElementById('pause-icon');
@@ -463,24 +438,7 @@
         const progressFill = document.getElementById('progress-fill');
         const currentTimeEl = document.getElementById('current-time');
         const totalDurationEl = document.getElementById('total-duration');
-        const highlightText = document.getElementById('highlight-text');
         const lyricsDrawer = document.getElementById('lyrics-drawer');
-
-        // Abre o seletor de ficheiros ao clicar na capa
-        albumArt.addEventListener('click', () => fileInput.click());
-
-        // Carrega o ficheiro de áudio para a memória do browser
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const fileURL = URL.createObjectURL(file);
-                audio.src = fileURL;
-                uploadTip.style.opacity = '0';
-                highlightText.textContent = "Moon, a hole of light";
-                audio.play();
-                togglePlayUI(true);
-            }
-        });
 
         function formatTime(seconds) {
             if (isNaN(seconds)) return "0:00";
@@ -502,9 +460,12 @@
         }
 
         playPauseBtn.addEventListener('click', () => {
-            if (!audio.src) { fileInput.click(); return; }
-            if (audio.paused) { audio.play(); togglePlayUI(true); } 
-            else { audio.pause(); togglePlayUI(false); }
+            if (audio.paused) { 
+                audio.play().then(() => togglePlayUI(true)).catch(err => console.log("Erro ao tocar:", err));
+            } else { 
+                audio.pause(); 
+                togglePlayUI(false); 
+            }
         });
 
         audio.addEventListener('timeupdate', () => {
